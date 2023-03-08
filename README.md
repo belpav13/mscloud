@@ -8,8 +8,8 @@
 3. Open H2 in browser and check table.(optional)
    http://localhost:8080/h2/
 ![img.png](../../../../dev/workspaces/javaWorkSpace/IdeaProjects/listing-details-filtered-pages/img.png)
-4. Run Query by Get action
-   curl --location 'http://localhost:8080/listings?
+4.1 Run Query by Get action  (restemplate)
+   curl --location 'http://localhost:8081/listings?
                                           minPrice=0.0081&
                                           maxPrice=0.15&
                                           minMinCpm=1&
@@ -22,6 +22,14 @@
 .....
 ![img_3.png](../../../../dev/workspaces/javaWorkSpace/IdeaProjects/listing-details-filtered-pages/img_3.png)
 
+4.2 Run Query by Get action (webclient)
+    curl --location 'http://localhost:8082/query?
+                                        minPrice=0.0081&
+                                        maxPrice=0.15&
+                                        minMinCpm=1&
+                                        maxMinCpm=2&
+                                        pageNumber=1&
+                                        pageSize=20'
 
 5. Docker image
    docker pull belpav/listing-details-filtered-pages:1.0.0
