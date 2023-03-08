@@ -12,9 +12,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Repository
 public class CriteriaRepository {
@@ -100,7 +98,12 @@ public class CriteriaRepository {
     }
 
     public List<DetailsEntity> findAllWithFiltersOnly(DetailsSearchCriteria detailsSearchCriteria) {
-        DetailsPage detailsPage = new DetailsPage();
+        DetailsPage detailsPage = DetailsPage.builder()
+                .pageNumber(0)
+                .pageSize(10)
+                .sortBy("price")
+                .sortDirection(Sort.Direction.ASC)
+                .build();
         CriteriaQuery<DetailsEntity> criteriaQuery = criteriaBuilder.createQuery(DetailsEntity.class);
         Root<DetailsEntity> detailsRoot = criteriaQuery.from(DetailsEntity.class);
         Predicate predicate = getPredicate(detailsSearchCriteria, detailsRoot);
@@ -110,7 +113,7 @@ public class CriteriaRepository {
         TypedQuery<DetailsEntity> typedQuery = entityManager.createQuery(criteriaQuery);
 
         List<DetailsEntity> resultList = typedQuery.getResultList();
-        return resultList;
+        return Optional.ofNullable(resultList).orElse(Collections.emptyList());
 
     }
 }
