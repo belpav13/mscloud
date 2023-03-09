@@ -4,6 +4,7 @@ package com.pavel.service;
 import com.pavel.model.DetailsEntity;
 import com.pavel.model.DetailsPage;
 import com.pavel.model.DetailsSearchCriteria;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,8 @@ import java.util.List;
 @Service
 @Transactional
 public class QService {
+    @Value("${db-service.listingsquery.uri}")
+    private String uri;
     private final WebClient.Builder webClientBuilder;
 
     public QService(WebClient.Builder webClientBuilder) {
@@ -25,7 +28,7 @@ public class QService {
 
     public List<DetailsEntity> getAllDetails() {
         return webClientBuilder.build().get()
-                .uri("http://db-service/listingsall",
+                .uri(uri,
                         uriBuilder -> uriBuilder
                                 .build())
                 .retrieve()
@@ -36,8 +39,9 @@ public class QService {
 
     public Page<DetailsEntity> getDetails(DetailsPage detailsPage,
                                           DetailsSearchCriteria detailsSearchCriteria) {
+
         List<DetailsEntity> result = webClientBuilder.build().get()
-                .uri("http://db-service/listingsquery",
+                .uri(uri,
                         uriBuilder -> uriBuilder
                                 .queryParam("minPrice", detailsSearchCriteria.getMinPrice())
                                 .queryParam("maxPrice", detailsSearchCriteria.getMaxPrice())

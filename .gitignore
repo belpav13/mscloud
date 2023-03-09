@@ -10,7 +10,7 @@ Thumbs.db
 # Build Files #
 
 bin
-target
+target/
 build/
 .gradle
 
@@ -29,6 +29,7 @@ build/
 *.idea
 *.lst
 *.class
+
 
 # VS Code #
 .vscode/
