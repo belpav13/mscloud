@@ -1,7 +1,7 @@
 package com.pavel;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.net.MediaType;
+import org.springframework.http.MediaType;
 import com.pavel.model.DetailsPage;
 import com.pavel.model.DetailsSearchCriteria;
 import com.pavel.repository.CriteriaRepository;
@@ -14,18 +14,25 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Sort;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
+import static org.apache.http.client.methods.RequestBuilder.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -51,18 +58,27 @@ public class DBServiceAppTest {
                 .build();
     }
 
-    //@Test
+//    @Test
     void shouldPopulateDB() throws Exception {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-        mockMvc.perform(multipart("/upload").file(loadFile()))
-                .andExpect(status().isOk());
-        Assertions.assertEquals(171, dbRepository.findAll().size());
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/upload")
+//                        .file(loadFile())
+                .file("file", new ClassPathResource("listing-details.csv").getInputStream().readAllBytes())
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .header("Accept", "*/*"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(print());
+        Assertions.assertEquals(1000, dbRepository.findAll().size());
     }
 
     public static MockMultipartFile loadFile() throws IOException {
-        File targetFile = new File("listing-details.csv");
-        MockMultipartFile multipartFile = new MockMultipartFile("file", "listing-details.csv", String.valueOf(MediaType.FORM_DATA), new FileInputStream(targetFile));
-        return multipartFile;
+        MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "listing-details.csv",
+                MediaType.MULTIPART_FORM_DATA_VALUE,
+                new ClassPathResource("listing-details.csv").getInputStream());
+        return file;
     }
 
     @Test
@@ -85,7 +101,8 @@ public class DBServiceAppTest {
                         .queryParam("maxPrice", String.valueOf(detailsSearchCriteria.getMaxPrice()))
                         .queryParam("minMinCpm", String.valueOf(detailsSearchCriteria.getMinMinCpm()))
                         .queryParam("maxMinCpm", String.valueOf(detailsSearchCriteria.getMaxMinCpm())))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(print());
 
     }
 
@@ -109,7 +126,8 @@ public class DBServiceAppTest {
                         .queryParam("maxPrice", String.valueOf(detailsSearchCriteria.getMaxPrice()))
                         .queryParam("minMinCpm", String.valueOf(detailsSearchCriteria.getMinMinCpm()))
                         .queryParam("maxMinCpm", String.valueOf(detailsSearchCriteria.getMaxMinCpm())))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(print());
 
     }
 
@@ -136,7 +154,8 @@ public class DBServiceAppTest {
                         .queryParam("sortBy", String.valueOf(detailsPage.getSortBy()))
                         .queryParam("pageNumber", String.valueOf(detailsPage.getPageNumber()))
                         .queryParam("pageSize", String.valueOf(detailsPage.getPageSize())))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(print());
 
     }
 

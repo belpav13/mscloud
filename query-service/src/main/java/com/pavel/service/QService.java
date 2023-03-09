@@ -47,7 +47,8 @@ public class QService {
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<DetailsEntity>>(){})
                 .block();
-
+        detailsPage.setSortBy("price");
+        detailsPage.setSortDirection(Sort.Direction.ASC);
           return new PageImpl(result,getPageable(detailsPage) , result.size());
 
 

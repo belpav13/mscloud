@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -61,7 +62,8 @@ public class QServiceAppTest {
                         .queryParam("sortBy", String.valueOf(detailsPage.getSortBy()))
                         .queryParam("pageNumber", String.valueOf(detailsPage.getPageNumber()))
                         .queryParam("pageSize", String.valueOf(detailsPage.getPageSize())))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(MockMvcResultHandlers.print());;
 
     }
 
