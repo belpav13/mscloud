@@ -37,7 +37,7 @@ public class DBController {
 
     @GetMapping("/listingsquery")
     public ResponseEntity<List<DetailsEntity>> getDetailsFiltered(DetailsSearchCriteria detailsSearchCriteria
-    ) {
+    ) throws InterruptedException {
         return new ResponseEntity<>(qService.getDetailsFiltered( detailsSearchCriteria),
                 HttpStatus.OK);
     }
