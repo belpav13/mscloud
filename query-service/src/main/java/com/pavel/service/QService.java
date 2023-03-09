@@ -4,7 +4,10 @@ package com.pavel.service;
 import com.pavel.model.DetailsEntity;
 import com.pavel.model.DetailsPage;
 import com.pavel.model.DetailsSearchCriteria;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.sleuth.Span;
+import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -17,14 +20,12 @@ import java.util.List;
 
 @Service
 @Transactional
+@AllArgsConstructor
 public class QService {
     @Value("${db-service.listingsquery.uri}")
     private String uri;
     private final WebClient.Builder webClientBuilder;
-
-    public QService(WebClient.Builder webClientBuilder) {
-        this.webClientBuilder = webClientBuilder;
-    }
+    private final Tracer tracer;
 
     public List<DetailsEntity> getAllDetails() {
         return webClientBuilder.build().get()
@@ -39,7 +40,9 @@ public class QService {
 
     public Page<DetailsEntity> getDetails(DetailsPage detailsPage,
                                           DetailsSearchCriteria detailsSearchCriteria) {
+        Span detailsServiceLookup = tracer.nextSpan().name("DetailsServiceLookup");
 
+        try (Tracer.SpanInScope isLookup = tracer.withSpan(detailsServiceLookup.start())) {
         List<DetailsEntity> result = webClientBuilder.build().get()
                 .uri(uri,
                         uriBuilder -> uriBuilder
@@ -55,7 +58,9 @@ public class QService {
         detailsPage.setSortDirection(Sort.Direction.ASC);
           return new PageImpl(result,getPageable(detailsPage) , result.size());
 
-
+        } finally {
+            detailsServiceLookup.end();
+        }
     }
 
     private Pageable getPageable(DetailsPage detailsPage) {
