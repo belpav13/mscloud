@@ -1,8 +1,9 @@
 package com.pavel.service;
 
-import com.pavel.model.DetailsEntity;
-import com.pavel.model.DetailsPage;
-import com.pavel.model.DetailsSearchCriteria;
+
+import com.pavel.contracts.model.DetailsPage;
+import com.pavel.contracts.model.DetailsEntity;
+import com.pavel.contracts.model.DetailsSearchCriteria;
 import com.pavel.repository.CriteriaRepository;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

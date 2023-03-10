@@ -2,8 +2,8 @@ package com.pavel;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;
-import com.pavel.model.DetailsPage;
-import com.pavel.model.DetailsSearchCriteria;
+import com.pavel.contracts.model.DetailsPage;
+import com.pavel.contracts.model.DetailsSearchCriteria;
 import com.pavel.repository.CriteriaRepository;
 import com.pavel.repository.DBRepository;
 import lombok.Data;

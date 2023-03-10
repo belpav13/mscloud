@@ -1,6 +1,6 @@
 package com.pavel;
 
-import com.pavel.event.QueryEvent;
+import com.pavel.contracts.event.QueryEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

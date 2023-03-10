@@ -1,3 +1,3 @@
-mvn clean install
-docker build . -t belpav/db-service:1.0.0
-docker push belpav/db-service:1.0.0
+mvn clean install  -DskipTests
+docker build . -t belpav/mscloud-dbservice:latest
+docker push belpav/mscloud-dbservice:latest

@@ -1,10 +1,10 @@
 package com.pavel.service;
 
 
-import com.pavel.event.QueryEvent;
-import com.pavel.model.DetailsEntity;
-import com.pavel.model.DetailsPage;
-import com.pavel.model.DetailsSearchCriteria;
+import com.pavel.contracts.event.QueryEvent;
+import com.pavel.contracts.model.DetailsEntity;
+import com.pavel.contracts.model.DetailsPage;
+import com.pavel.contracts.model.DetailsSearchCriteria;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Tracer;

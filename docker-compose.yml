@@ -1,37 +1,37 @@
 ---
 version: '3.7'
 services:
-#
-#  ## Keycloak Config with Mysql database
-#  keycloak-mysql:
-#    container_name: keycloak-mysql
-#    image: mysql:5.7
-#    volumes:
-#      - ./mysql_keycloak_data:/var/lib/mysql
-#    environment:
-#      MYSQL_ROOT_PASSWORD: root
-#      MYSQL_DATABASE: keycloak
-#      MYSQL_USER: keycloak
-#      MYSQL_PASSWORD: password
-#
-#  keycloak:
-#    container_name: keycloak
-#    image: quay.io/keycloak/keycloak:18.0.0
-#    command: [ "start-dev", "--import-realm" ]
-#    environment:
-#      DB_VENDOR: MYSQL
-#      DB_ADDR: mysql
-#      DB_DATABASE: keycloak
-#      DB_USER: keycloak
-#      DB_PASSWORD: password
-#      KEYCLOAK_ADMIN: admin
-#      KEYCLOAK_ADMIN_PASSWORD: admin
-#    ports:
-#      - "8080:8080"
-#    volumes:
-#      - ./realms/:/opt/keycloak/data/import/
-#    depends_on:
-#      - keycloak-mysql
+  ## Keycloak Config with Mysql database
+  keycloak-mysql:
+    container_name: keycloak-mysql
+    image: mysql:5.7
+    volumes:
+      - ./mysql_keycloak_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: keycloak
+      MYSQL_USER: keycloak
+      MYSQL_PASSWORD: password
+
+  keycloak:
+    container_name: keycloak
+    image: quay.io/keycloak/keycloak:18.0.0
+#    command: [ "start-dev" ]
+    command: [ "start-dev", "--import-realm" ]
+    environment:
+      DB_VENDOR: MYSQL
+      DB_ADDR: mysql
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: password
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./realms/:/opt/keycloak/data/import/
+    depends_on:
+      - keycloak-mysql
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.0.1
@@ -58,100 +58,114 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
 
-#  ## Zipkin
-#  zipkin:
-#    image: openzipkin/zipkin
-#    container_name: zipkin
-#    ports:
-#      - "9411:9411"
-#
-#  ## Eureka Server
-#  discovery-server:
-#    image: saiupadhyayula007/discovery-server:latest
-#    container_name: discovery-server
-#    ports:
-#      - "8761:8761"
-#    environment:
-#      - SPRING_PROFILES_ACTIVE=docker
-#    depends_on:
-#      - zipkin
-#
-#  api-gateway:
-#    image: belpav/api-gateway:latest
-#    container_name: api-gateway
-#    ports:
-#      - "8181:8080"
-#    expose:
-#      - "8181"
-#    environment:
-#      - SPRING_PROFILES_ACTIVE=docker
-#      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY= TRACE
-#    depends_on:
-#      - zipkin
-#      - discovery-server
+  ## Zipkin
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    ports:
+      - "9411:9411"
+
+  ## Eureka Server
+  discovery-server:
+    image: belpav/mscloud-discoveryservice:latest
+    container_name: discovery-server
+    ports:
+      - "8761:8761"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - zipkin
+
+  api-gateway:
+    image: belpav/mscloud-apigateway:latest
+    container_name: api-gateway
+    ports:
+      - "8081:8080"
+    expose:
+      - "8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY= TRACE
+    depends_on:
+      - zipkin
+      - discovery-server
 #      - keycloak
-#
-#  ## DB-Service Docker Compose Config
-#  product-service:
-#    container_name: db-service
-#    image: belpav/db-service:latest
-#    environment:
-#      - SPRING_PROFILES_ACTIVE=docker
-#      - SPRING_DATASOURCE_URL=jdbc:h2:mem:memDb;DB_CLOSE_DELAY=-1
-#    depends_on:
-#      - discovery-server
-#      - api-gateway
-#
-#  ## Query-Service Docker Compose Config
-#  order-service:
-#    container_name: query-service
-#    image: belpav/query-service:latest
-#    environment:
-#      - SPRING_PROFILES_ACTIVE=docker
-#
-#    depends_on:
-#      - broker
-#      - zipkin
-#      - discovery-server
-#      - api-gateway
-#
-#
-#  ## Notification-Service Docker Compose Config
-#  notification-service:
-#    container_name: notification-service
-#    image: belpav/notification-service:latest
-#    environment:
-#      - SPRING_PROFILES_ACTIVE=docker
-#    depends_on:
-#      - zipkin
-#      - broker
-#      - discovery-server
-#      - api-gateway
-#
-#  ## Prometheus
-#  prometheus:
-#    image: prom/prometheus:v2.37.1
-#    container_name: prometheus
-#    restart: always
-#    ports:
-#      - "9090:9090"
-#    volumes:
-#      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-#    depends_on:
-#      - db-service
-#      - query-service
-#      - notification-service
-#
-#  grafana:
-#    image: grafana/grafana-oss:8.5.2
-#    container_name: grafana
-#    restart: always
-#    ports:
-#      - "3000:3000"
-#    links:
-#      - prometheus:prometheus
-#    volumes:
-#      - ./grafana:/var/lib/grafana
-#    environment:
-#      - GF_SECURITY_ADMIN_USER=admin
-#      - GF_SECURITY_ADMIN_PASSWORD=password
+
+  ## DB-Service Docker Compose Config
+  db-service:
+    container_name: db-service
+    image: belpav/mscloud-dbservice:latest
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - h2
+      - discovery-server
+      - api-gateway
+
+  ## Query-Service Docker Compose Config
+  query-service:
+    container_name: query-service
+    image: belpav/mscloud-queryservice:latest
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - broker
+      - zipkin
+      - discovery-server
+      - api-gateway
+
+
+  ## Notification-Service Docker Compose Config
+  notification-service:
+    container_name: notification-service
+    image: belpav/mscloud-notifyservice:latest
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - zipkin
+      - broker
+      - discovery-server
+      - api-gateway
+
+  ## Prometheus
+  prometheus:
+    image: prom/prometheus:v2.37.1
+    container_name: prometheus
+    restart: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - db-service
+      - query-service
+      - notification-service
+
+  grafana:
+    image: grafana/grafana-oss:8.5.2
+    container_name: grafana
+    restart: always
+    ports:
+      - "3000:3000"
+    links:
+      - prometheus:prometheus
+    volumes:
+      - ./grafana:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=password
+
+  ## H2 Docker Compose Config
+  h2:
+    container_name: 'h2'
+    hostname: 'h2'
+    image: 1000kit/h2
+    ports:
+      - "8181:8181"
+      - "1521:1521"
+    expose:
+      - "8181"
+    volumes:
+      - h2-data:/opt/h2-data
+volumes:
+  h2-data:

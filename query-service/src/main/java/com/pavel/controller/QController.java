@@ -1,8 +1,8 @@
 package com.pavel.controller;
 
-import com.pavel.model.DetailsEntity;
-import com.pavel.model.DetailsPage;
-import com.pavel.model.DetailsSearchCriteria;
+import com.pavel.contracts.model.DetailsEntity;
+import com.pavel.contracts.model.DetailsPage;
+import com.pavel.contracts.model.DetailsSearchCriteria;
 import com.pavel.service.QService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;

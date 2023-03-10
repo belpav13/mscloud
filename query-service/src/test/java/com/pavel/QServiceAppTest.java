@@ -1,8 +1,8 @@
 package com.pavel;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pavel.model.DetailsPage;
-import com.pavel.model.DetailsSearchCriteria;
+import com.pavel.contracts.model.DetailsPage;
+import com.pavel.contracts.model.DetailsSearchCriteria;
 import com.pavel.service.QService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

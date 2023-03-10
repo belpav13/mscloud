@@ -3,8 +3,8 @@ package com.pavel.service;
 import java.io.IOException;
 import java.util.List;
 
-import com.pavel.helper.CSVHelper;
-import com.pavel.model.DetailsEntity;
+import com.pavel.contracts.helper.CSVHelper;
+import com.pavel.contracts.model.DetailsEntity;
 import com.pavel.repository.DBRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
